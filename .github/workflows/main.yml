@@ -30,12 +30,8 @@ jobs:
           in: "./GameShare.ahk"
           out: "./GameShare.exe"
           icon: "./Icon.ico"
-      - name: Install zip
-        uses: montudor/action-zip@v1
-      - name: Create release zip
-        run: zip GameShare.zip -j ./GameShare.exe ./Icon.ico
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: GameShare
-          path: ./GameShare.zip
+          path: ./GameShare.exe
