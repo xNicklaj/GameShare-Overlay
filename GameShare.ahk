@@ -11,10 +11,10 @@ if(!FileExist("Config.ini"))
 ahk_id := ""
 Config := ReadIniFile("Config.ini")
 screen_format_consts := {"16:9": {"W":16, "H":9}, "21:9": {"W":21, "H": 9}}
-screen_format := Config["Display"]["SFormat"]
+screen_format := Config["Display"]["sFormat"]
 Padding := 8
-Delta := Config["General"]["ISizeStep"]
-Animation_Duration := Config["General"]["IAnimationDuration"]
+Delta := Config["General"]["fStepSize"]
+Animation_Duration := Config["General"]["fAnimationDuration"]
 
 Atoi(String){
   Number := String , Number += 0  ; convert text to number
@@ -44,9 +44,13 @@ Minimize(ahk_id){
   Y := Padding
 
   ; WinMove, %ahk_id%, , , , %WinWidth%, %WinHeight%
-  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),Animation_Duration)
-  MoveToCorner(ahk_id, "tr")
-  t := Config["Display"]["BTransparency"]
+  if(Config["Display"]["bUseAnimations"] == True)
+    SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),Animation_Duration)
+  else{
+    SetWindowSize(ahk_id, WinWidth, WinHeight)
+    MoveToCorner(ahk_id, "tr")
+  }
+  t := Config["Display"]["fTransparency"]
   WinSet, Transparent, %t%, %ahk_id%
   return
 }
@@ -55,6 +59,7 @@ Minimize(ahk_id){
 Maximize(ahk_id){
   global Padding
   global Animation_Duration
+  global Config
 
   SysGet, VirtualScreenWidth, 78
   SysGet, VirtualScreenHeight, 79
@@ -64,10 +69,12 @@ Maximize(ahk_id){
   Y := Padding
 
   WinSet, Transparent, 255, %ahk_id%
-  ; MoveToCorner(ahk_id, "tl")
-  ; SetWindowSize(ahk_id, WinWidth, WinHeight)
-  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tl", "X"), GetCornerCoords(WinWidth, WinHeight, "tl", "Y"),Animation_Duration)
-  ; WinMove, %ahk_id%, , %X%, %Y%, %WinWidth%, %WinHeight%
+  if(Config["Display"]["bUseAnimations"] == True)
+    SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tl", "X"), GetCornerCoords(WinWidth, WinHeight, "tl", "Y"),Animation_Duration)
+  else{
+    MoveToCorner(ahk_id, "tl")
+    SetWindowSize(ahk_id, WinWidth, WinHeight)
+  }
   return
 }
 
@@ -90,6 +97,7 @@ IsMaximised(ahk_id){
 MoveToCorner(ahk_id, corner){
   global Padding
   global Animation_Duration
+  global Config
   SysGet, VirtualScreenWidth, 78
   SysGet, VirtualScreenHeight, 79
   X := 0
@@ -115,7 +123,10 @@ MoveToCorner(ahk_id, corner){
     default:
       return
   }
-  SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
+  if(Config["Display"]["bUseAnimations"] == True)
+    SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
+  Else
+    MoveWindow(ahk_id, X, Y)
   return
 }
 
@@ -170,12 +181,15 @@ ModifyWindowSize(ahk_id, delta){
   global screen_format
   global screen_format_consts
   global Animation_Duration
+  global Config
 
   WinGetPos, , , Width, Height, %ahk_id%
   h := Height + delta
   w := CalculateWidth(h)
-  Tooltip, %w% %h% 
-  SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
+  if(Config["Display"]["bUseAnimations"] == True)
+    SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
+  Else
+    SetWindowSize(ahk_id, w, h)
   return
 }
 
@@ -281,7 +295,7 @@ ModifyWindowSize(ahk_id, delta){
   MoveToCorner(ahk_id, c)
   return
 
-^!Ins::
+^!PrintScreen::
   Config := ReadIniFile("Config.ini")
   for k,v in Config["General"]
   {
@@ -291,3 +305,5 @@ ModifyWindowSize(ahk_id, delta){
   {
     msgbox, %k% - %v%
   }
+  v := Config["Display"]["bUseAnimations"]
+  msgbox, %v%
