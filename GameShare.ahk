@@ -1,17 +1,32 @@
 SetWorkingDir, %A_ScriptDir%
-#Include lib/Smoothings.ahk
+#Include Lib/Configuration.ahk
+#Include Lib/WinEdit.ahk
+#Include Lib/Smoothings.ahk
+#Include Lib/Ini.ahk
+
+if(!FileExist("Config.ini"))
+  WriteDefaultConfig()
 
 ; Avoid changing. You can, nothing bad will happen, it's just not recommended.
 ahk_id := ""
+Config := ReadIniFile("Config.ini")
 screen_format_consts := {"16:9": {"W":16, "H":9}, "21:9": {"W":21, "H": 9}}
-screen_format := "16:9"
+screen_format := Config["Display"]["SFormat"]
 Padding := 8
-Delta := 16
-Animation_Duration = 200
+Delta := Config["General"]["ISizeStep"]
+Animation_Duration := Config["General"]["IAnimationDuration"]
+
+Atoi(String){
+  Number := String , Number += 0  ; convert text to number
+  if Number is space
+    Number := 0 ; convert empty line to 0
+  return Number
+}
 
 CalculateWidth(Height){
   global screen_format_consts
   global screen_format
+  global Config
   return Height / screen_format_consts[screen_format]["H"] * screen_format_consts[screen_format]["W"]
 }
 
@@ -19,6 +34,8 @@ Minimize(ahk_id){
   global Padding
   global screen_format
   global screen_format_consts
+  global Config
+  global Animation_Duration
 
   SysGet, VirtualScreenWidth, 78
   WinHeight := 288
@@ -27,14 +44,17 @@ Minimize(ahk_id){
   Y := Padding
 
   ; WinMove, %ahk_id%, , , , %WinWidth%, %WinHeight%
-  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),300)
+  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),Animation_Duration)
   MoveToCorner(ahk_id, "tr")
-  WinSet, Transparent, 240, %ahk_id%
+  t := Config["Display"]["BTransparency"]
+  WinSet, Transparent, %t%, %ahk_id%
   return
 }
 
+
 Maximize(ahk_id){
   global Padding
+  global Animation_Duration
 
   SysGet, VirtualScreenWidth, 78
   SysGet, VirtualScreenHeight, 79
@@ -42,10 +62,11 @@ Maximize(ahk_id){
   WinHeight := VirtualScreenHeight - 2 * Padding
   X := Padding
   Y := Padding
-  
+
   WinSet, Transparent, 255, %ahk_id%
-  MoveToCorner(ahk_id, "tl")
-  SetWindowSize(ahk_id, WinWidth, WinHeight)
+  ; MoveToCorner(ahk_id, "tl")
+  ; SetWindowSize(ahk_id, WinWidth, WinHeight)
+  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tl", "X"), GetCornerCoords(WinWidth, WinHeight, "tl", "Y"),Animation_Duration)
   ; WinMove, %ahk_id%, , %X%, %Y%, %WinWidth%, %WinHeight%
   return
 }
@@ -94,8 +115,6 @@ MoveToCorner(ahk_id, corner){
     default:
       return
   }
-  SetWinDelay, -1
-  ; WinMove, %ahk_id%, , %X%, %Y%, , 
   SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
   return
 }
@@ -136,13 +155,13 @@ GetCorner(ahk_id){
   SysGet, VirtualScreenHeight, 79
   Padding := 8
   WinGetPos, X, Y, Width, Height, %ahk_id%
-  if(Floor(X) == Padding && Floor(Y) == Padding) 
+  if(Floor(X) == Padding && Floor(Y) == Padding)
     return "tl"
-  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Padding) 
+  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Padding)
     return "tr"
-  if(Floor(X) == Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding) 
+  if(Floor(X) == Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding)
     return "bl"
-  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding) 
+  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding)
     return "br"
   return ""
 }
@@ -154,7 +173,8 @@ ModifyWindowSize(ahk_id, delta){
 
   WinGetPos, , , Width, Height, %ahk_id%
   h := Height + delta
-  w := CalculateWidth(Height)
+  w := CalculateWidth(h)
+  Tooltip, %w% %h% 
   SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
   return
 }
@@ -165,7 +185,8 @@ ModifyWindowSize(ahk_id, delta){
   return
 
 ^!S::
-  global ahk_id 
+  global ahk_id
+  global Config
   WinSet, Alwaysontop, , %ahk_id%
 
   WinGet, ExStyle, ExStyle, %ahk_id%
@@ -180,12 +201,12 @@ ModifyWindowSize(ahk_id, delta){
   return
 
 ^!M::
-  global ahk_id 
+  global ahk_id
 
   if(!IsMaximised(ahk_id)){
     Maximize(ahk_id)
   }
-  else{ 
+  else{
     Minimize(ahk_id)
   }
   return
@@ -203,7 +224,7 @@ ModifyWindowSize(ahk_id, delta){
     }
   }
   return
-  
+
 ^!Left::
   global ahk_id
   WinGet, ExStyle, ExStyle, %ahk_id%
@@ -259,3 +280,14 @@ ModifyWindowSize(ahk_id, delta){
   ModifyWindowSize(ahk_id, -Delta)
   MoveToCorner(ahk_id, c)
   return
+
+^!Ins::
+  Config := ReadIniFile("Config.ini")
+  for k,v in Config["General"]
+  {
+    msgbox, %k% - %v%
+  }
+  for k,v in Config["Display"]
+  {
+    msgbox, %k% - %v%
+  }

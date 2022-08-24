@@ -1,5 +1,6 @@
 SetWorkingDir, %A_ScriptDir%
 MoveWindow(ahk_id, X, Y){ 
+  SetWinDelay, -1
   WinMove, %ahk_id%, , %X%, %Y%, , 
   return
 }
