@@ -89,7 +89,8 @@ This is a usage example with Discord ScreenShare:
 - [x] Move window corner.
 - [x] Maximize window.
 - [x] Increase / Decrease overlay size.
-- [ ] Configuration INI
+- [X] Configuration INI
+- [ ] Improved Multiple Windows Management
 - [ ] More Hotkeys
 
 You can check the full changelog <a href="https://github.com/xNicklaj/GameShare-Overlay/releases/">here</a>.
