@@ -44,7 +44,7 @@ Minimize(ahk_id){
   Y := Padding
 
   ; WinMove, %ahk_id%, , , , %WinWidth%, %WinHeight%
-  if(Config["Display"]["bUseAnimations"] == True)
+  if(Config["Display"]["bUseAnimations"] == "True")
     SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),Animation_Duration)
   else{
     SetWindowSize(ahk_id, WinWidth, WinHeight)
@@ -69,7 +69,7 @@ Maximize(ahk_id){
   Y := Padding
 
   WinSet, Transparent, 255, %ahk_id%
-  if(Config["Display"]["bUseAnimations"] == True)
+  if(Config["Display"]["bUseAnimations"] == "True")
     SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tl", "X"), GetCornerCoords(WinWidth, WinHeight, "tl", "Y"),Animation_Duration)
   else{
     MoveToCorner(ahk_id, "tl")
@@ -123,7 +123,7 @@ MoveToCorner(ahk_id, corner){
     default:
       return
   }
-  if(Config["Display"]["bUseAnimations"] == True)
+  if(Config["Display"]["bUseAnimations"] == "True")
     SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
   Else
     MoveWindow(ahk_id, X, Y)
@@ -186,7 +186,7 @@ ModifyWindowSize(ahk_id, delta){
   WinGetPos, , , Width, Height, %ahk_id%
   h := Height + delta
   w := CalculateWidth(h)
-  if(Config["Display"]["bUseAnimations"] == True)
+  if(Config["Display"]["bUseAnimations"] == "True")
     SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
   Else
     SetWindowSize(ahk_id, w, h)
@@ -305,5 +305,4 @@ ModifyWindowSize(ahk_id, delta){
   {
     msgbox, %k% - %v%
   }
-  v := Config["Display"]["bUseAnimations"]
   msgbox, %v%
