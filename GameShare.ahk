@@ -1,12 +1,19 @@
-#SingleInstance force
-
-ahk_id := ""
+SetWorkingDir, %A_ScriptDir%
+#Include lib/Smoothings.ahk
 
 ; Avoid changing. You can, nothing bad will happen, it's just not recommended.
+ahk_id := ""
 screen_format_consts := {"16:9": {"W":16, "H":9}, "21:9": {"W":21, "H": 9}}
 screen_format := "16:9"
 Padding := 8
 Delta := 16
+Animation_Duration = 200
+
+CalculateWidth(Height){
+  global screen_format_consts
+  global screen_format
+  return Height / screen_format_consts[screen_format]["H"] * screen_format_consts[screen_format]["W"]
+}
 
 Minimize(ahk_id){
   global Padding
@@ -15,12 +22,12 @@ Minimize(ahk_id){
 
   SysGet, VirtualScreenWidth, 78
   WinHeight := 288
-  WinWidth := WinHeight / screen_format_consts[screen_format]["H"] * screen_format_consts[screen_format]["W"]
+  WinWidth := CalculateWidth(WinHeight)
   X := VirtualScreenWidth - WinWidth - Padding
   Y := Padding
 
   ; WinMove, %ahk_id%, , , , %WinWidth%, %WinHeight%
-  SetWindowSize(ahk_id, WinWidth, WinHeight)
+  SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),300)
   MoveToCorner(ahk_id, "tr")
   WinSet, Transparent, 240, %ahk_id%
   return
@@ -61,6 +68,7 @@ IsMaximised(ahk_id){
 
 MoveToCorner(ahk_id, corner){
   global Padding
+  global Animation_Duration
   SysGet, VirtualScreenWidth, 78
   SysGet, VirtualScreenHeight, 79
   X := 0
@@ -86,8 +94,40 @@ MoveToCorner(ahk_id, corner){
     default:
       return
   }
-  WinMove, %ahk_id%, , %X%, %Y%, , 
+  SetWinDelay, -1
+  ; WinMove, %ahk_id%, , %X%, %Y%, , 
+  SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
   return
+}
+
+GetCornerCoords(Width, Height, corner, Coord){
+  global Padding
+  SysGet, VirtualScreenWidth, 78
+  SysGet, VirtualScreenHeight, 79
+  X := 0
+  Y := 0
+
+  switch corner{
+    case "tl":
+      X := Padding
+      Y := Padding
+    case "tr":
+      X := VirtualScreenWidth - Width - Padding
+      Y := Padding
+    case "bl":
+      X := Padding
+      Y := VirtualScreenHeight - Height - Padding
+    case "br":
+      X := VirtualScreenWidth - Width - Padding
+      Y := VirtualScreenHeight - Height - Padding
+    default:
+      return
+  }
+  if(Coord == "X")
+    return X
+  if(Coord == "Y")
+    return Y
+  return -1
 }
 
 GetCorner(ahk_id){
@@ -107,18 +147,15 @@ GetCorner(ahk_id){
   return ""
 }
 
-SetWindowSize(ahk_id, width, height){ 
-  WinMove, %ahk_id%, , , , %width%, %height%
-  return
-}
-
 ModifyWindowSize(ahk_id, delta){
   global screen_format
   global screen_format_consts
+  global Animation_Duration
+
   WinGetPos, , , Width, Height, %ahk_id%
   h := Height + delta
-  w := Height / screen_format_consts[screen_format]["H"] * screen_format_consts[screen_format]["W"]
-  SetWindowSize(ahk_id, w, h)
+  w := CalculateWidth(Height)
+  SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
   return
 }
 
