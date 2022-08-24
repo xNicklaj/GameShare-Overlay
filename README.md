@@ -18,7 +18,7 @@
 </div>
 
 <div align="center">
-  <img src="https://media0.giphy.com/media/jOMXMrER58jPO118ee/giphy.gif?cid=790b7611f486084a333500be2f85a8dba8983c6d1c604a66&rid=giphy.gif&ct=g" >
+  <img src="https://media0.giphy.com/media/LT3FYsIKghoYG4VUhh/giphy.gif?cid=790b76111abbc74156cebb0eff5db22bddb305eb432b28f8&rid=giphy.gif&ct=g" >
   <br/>
   <img src="https://media1.giphy.com/media/B8Mk84qATIEL4bLJtC/giphy.gif?cid=790b761143116a77d40355de5c0bbf59f8b5a131c800dbfc&rid=giphy.gif&ct=g" >
 </div>
@@ -78,6 +78,14 @@ This is a usage example with Discord ScreenShare:
 
 You can check the full changelog <a href="https://github.com/xNicklaj/GameShare-Overlay/releases/">here</a>.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## FAQ
+### Why Autohotkey?
+Because it's fast to code. It's not as optimized as a C program would be, but it's fast to code.
+
+### Why does it look so janky?
+Because I don't have access to my main computer right now, I'm developing from an old laptop that can barely run 2D games.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
