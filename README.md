@@ -53,6 +53,21 @@ Finally there are three features available at the moment:
  - Toggle a maximized view by pressing `CTRL + ALT + M`.
  - Increase / Decrease the size of the overaly by pressing `SHIFT + ALT + UP/DOWN`.
 
+ ## Configuration
+
+ Upon your first launch of GameShare Overlay, you will find that a configuration file has been created in its containing folder.
+ What follows is a list of all the different configuration options:
+ 
+- `General.fAnimationDuration`, this is the duration in ms of the animations. Defaults to `200`.
+- `General.fStepSize`, this is the step that will be used when increasing or decreasing the size of the overlayed window. Defaults to `32`.
+- `Display.sFormat`, this is the window ratio that will be used for the overlayed window. Defaults to `16:9`. Currently supported `16:9` or `21:9`.
+- `Display.fTransparency`, this is the transparency of the minimized window. Defaults to `255`, and its value goes from `0` (fully transparent) to `255` (fully opaque).
+- `Display.bUseAnimations`, this is a boolean that represents whether to use animations or not. Defaults to `True`.
+
+Changing configuration requires restarting the application.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Example
 
 This is a usage example with Discord ScreenShare:
