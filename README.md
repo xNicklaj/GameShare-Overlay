@@ -18,6 +18,8 @@
 </div>
 
 <div align="center">
+  <img src="https://media0.giphy.com/media/jOMXMrER58jPO118ee/giphy.gif?cid=790b7611f486084a333500be2f85a8dba8983c6d1c604a66&rid=giphy.gif&ct=g" >
+  <br/>
   <img src="https://media1.giphy.com/media/B8Mk84qATIEL4bLJtC/giphy.gif?cid=790b761143116a77d40355de5c0bbf59f8b5a131c800dbfc&rid=giphy.gif&ct=g" >
 </div>
   
