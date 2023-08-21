@@ -27,7 +27,13 @@ CalculateWidth(Height){
   global screen_format_consts
   global screen_format
   global Config
-  return Height / screen_format_consts[screen_format]["H"] * screen_format_consts[screen_format]["W"]
+  W := screen_format_consts[screen_format]["W"]
+  H := screen_format_consts[screen_format]["H"]
+  if W =
+    W := StrSplit(screen_format, ":")[1] + 0
+  if H =
+    H := StrSplit(screen_format, ":")[2] + 0
+  return Height / H * W
 }
 
 Minimize(ahk_id){
