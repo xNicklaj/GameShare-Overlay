@@ -26,6 +26,12 @@ Atoi(String){
   return Number
 }
 
+SmoothEquals(x, y){
+  if(x > y - 3 && x < y + 3) 
+    return True
+  return False
+}
+
 CalculateWidth(Height){
   global screen_format_consts
   global screen_format
@@ -187,11 +193,11 @@ GetCorner(ahk_id){
   WinGetPos, X, Y, Width, Height, %ahk_id%
   if(Floor(X) == Padding && Floor(Y) == Padding)
     return "tl"
-  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Padding)
+  if(SmoothEquals(Floor(X), Floor(VirtualScreenWidth) - Floor(Width) - Padding) && Floor(Y) == Padding)
     return "tr"
-  if(Floor(X) == Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding)
+  if(Floor(X) == Padding && SmoothEquals(Floor(Y), Floor(VirtualScreenHeight) - Floor(Height) - Padding))
     return "bl"
-  if(Floor(X) == Floor(VirtualScreenWidth) - Floor(Width) - Padding && Floor(Y) == Floor(VirtualScreenHeight) - Floor(Height) - Padding)
+  if(SmoothEquals(Floor(X), Floor(VirtualScreenWidth) - Floor(Width) - Padding) && SmoothEquals(Floor(Y), Floor(VirtualScreenHeight) - Floor(Height) - Padding))
     return "br"
   return ""
 }
@@ -300,9 +306,13 @@ ModifyWindowSize(ahk_id, delta){
   }
   return
 
+; ---------- Size manipulation ---------
+
 +!Up::
   global ahk_id
   global Delta
+  If (IsMaximised(ahk_id))
+    return
   c := GetCorner(ahk_id)
   ModifyWindowSize(ahk_id, Delta)
   MoveToCorner(ahk_id, c)
@@ -311,6 +321,8 @@ ModifyWindowSize(ahk_id, delta){
 ^+!Up::
   global ahk_id
   global Delta
+  If (IsMaximised(ahk_id))
+    return
   c := GetCorner(ahk_id)
   ModifyWindowSize(ahk_id, 5*Delta)
   MoveToCorner(ahk_id, c)
@@ -319,6 +331,8 @@ ModifyWindowSize(ahk_id, delta){
 +!Down::
   global ahk_id
   global Delta
+  If (IsMaximised(ahk_id))
+    return
   c := GetCorner(ahk_id)
   ModifyWindowSize(ahk_id, -Delta)
   MoveToCorner(ahk_id, c)
@@ -327,6 +341,8 @@ ModifyWindowSize(ahk_id, delta){
 ^+!Down::
   global ahk_id
   global Delta
+  If (IsMaximised(ahk_id))
+    return
   c := GetCorner(ahk_id)
   ModifyWindowSize(ahk_id, -5*Delta)
   MoveToCorner(ahk_id, c)
