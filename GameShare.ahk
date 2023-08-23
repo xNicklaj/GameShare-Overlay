@@ -16,6 +16,9 @@ Padding := 8
 Delta := Config["General"]["fStepSize"]
 Animation_Duration := Config["General"]["fAnimationDuration"]
 
+LastKnownCorner := "tr"
+LastKnowHeight := -1
+
 Atoi(String){
   Number := String , Number += 0  ; convert text to number
   if Number is space
@@ -42,20 +45,27 @@ Minimize(ahk_id){
   global screen_format_consts
   global Config
   global Animation_Duration
+  global LastKnownCorner
+  global LastKnownHeight
+  
+
 
   SysGet, VirtualScreenWidth, 78
   WinHeight := 288
+  if(LastKnownHeight > 0)
+    WinHeight := LastKnownHeight
   WinWidth := CalculateWidth(WinHeight)
   X := VirtualScreenWidth - WinWidth - Padding
   Y := Padding
 
   ; WinMove, %ahk_id%, , , , %WinWidth%, %WinHeight%
   if(Config["Display"]["bUseAnimations"] == "True")
-    SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, "tr", "X"), GetCornerCoords(WinWidth, WinHeight, "tr", "Y"),Animation_Duration)
+    SmoothSetWinPos(ahk_id, WinWidth, WinHeight, GetCornerCoords(WinWidth, WinHeight, LastKnownCorner, "X"), GetCornerCoords(WinWidth, WinHeight, LastKnownCorner, "Y"),Animation_Duration)
   else{
     SetWindowSize(ahk_id, WinWidth, WinHeight)
-    MoveToCorner(ahk_id, "tr")
+    MoveToCorner(ahk_id, LastKnownCorner)
   }
+  LastKnownHeight := WinHeight
   t := Config["Display"]["fTransparency"]
   WinSet, Transparent, %t%, %ahk_id%
   return
@@ -104,6 +114,8 @@ MoveToCorner(ahk_id, corner){
   global Padding
   global Animation_Duration
   global Config
+  global LastKnownCorner
+
   SysGet, VirtualScreenWidth, 78
   SysGet, VirtualScreenHeight, 79
   X := 0
@@ -133,6 +145,7 @@ MoveToCorner(ahk_id, corner){
     SmoothMoveWindow(ahk_id, X, Y, Animation_Duration)
   Else
     MoveWindow(ahk_id, X, Y)
+  LastKnownCorner := corner
   return
 }
 
@@ -188,6 +201,7 @@ ModifyWindowSize(ahk_id, delta){
   global screen_format_consts
   global Animation_Duration
   global Config
+  global LastKnownHeight
 
   WinGetPos, , , Width, Height, %ahk_id%
   h := Height + delta
@@ -196,6 +210,8 @@ ModifyWindowSize(ahk_id, delta){
     SmoothSetWindowSize(ahk_id, w, h, Animation_Duration)
   Else
     SetWindowSize(ahk_id, w, h)
+
+  LastKnownHeight := h
   return
 }
 
