@@ -308,6 +308,13 @@ ModifyWindowSize(ahk_id, delta){
   MoveToCorner(ahk_id, c)
   return
 
+^+!Up::
+  global ahk_id
+  global Delta
+  c := GetCorner(ahk_id)
+  ModifyWindowSize(ahk_id, 5*Delta)
+  MoveToCorner(ahk_id, c)
+  return
 
 +!Down::
   global ahk_id
@@ -316,6 +323,15 @@ ModifyWindowSize(ahk_id, delta){
   ModifyWindowSize(ahk_id, -Delta)
   MoveToCorner(ahk_id, c)
   return
+
+^+!Down::
+  global ahk_id
+  global Delta
+  c := GetCorner(ahk_id)
+  ModifyWindowSize(ahk_id, -5*Delta)
+  MoveToCorner(ahk_id, c)
+  return
+
 
 ^!PrintScreen::
   Config := ReadIniFile("Config.ini")

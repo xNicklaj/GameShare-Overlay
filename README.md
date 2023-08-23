@@ -51,7 +51,7 @@ Once the target is selected you can enable the overlay by pressing `CTRL + ALT +
 Finally there are three features available at the moment:
  - Move the corner of the overlay with `CTRL + ALT + Arrows`.
  - Toggle a maximized view by pressing `CTRL + ALT + M`.
- - Increase / Decrease the size of the overaly by pressing `SHIFT + ALT + UP/DOWN`.
+ - Increase / decrease the size of the overlay by pressing `SHIFT + ALT + UP/DOWN`, or greatly increase / decrease by pressing `CTRL + SHIFT + ALT + UP/DOWN`.
 
  ## Configuration
 
